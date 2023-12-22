@@ -70,7 +70,7 @@ class UsuariosLoginViews(APIView):
             else:
                 return Response(status= status.HTTP_400_BAD_REQUEST)
         else:
-            return(user, status.HTTP_404_NOT_FOUND)
+            return Response(user, status.HTTP_404_NOT_FOUND)
         
     
             
