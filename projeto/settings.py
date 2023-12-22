@@ -38,8 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'app',
     'corsheaders',
     
 ]
@@ -77,17 +78,21 @@ WSGI_APPLICATION = 'projeto.wsgi.application'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_HEADERS = '*'
 APPEND_SLASH = False
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'infohud_db',
+        'NAME': 'infohud_db_973k',
         'USER': 'admin',
-        'PASSWORD': 'IugN2N5q7GyIJnvC2Nah28UUgnoOA5oJ',
-        'HOST': 'dpg-clufpvla73kc73bgt6v0-a.oregon-postgres.render.com',
+        'PASSWORD': 'PUuBJsmaPQpbMno6qoh7CtD5CNx5jbEC',
+        'HOST': 'dpg-cm281721hbls73entvpg-a.oregon-postgres.render.com',
         'PORT': '5432',
     }
 }
