@@ -40,10 +40,6 @@ class UsuariosViews(viewsets.ModelViewSet):
     
 #////////////////////////////////////////////////////////////////////////////////////////////////
 class UsuariosLoginViews(APIView):
-    def get(self,request):
-        dados = User.objects.all()
-        return Response(status= status.HTTP_200_OK)
-    
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
