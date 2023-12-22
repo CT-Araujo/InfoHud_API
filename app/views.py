@@ -40,6 +40,10 @@ class UsuariosViews(viewsets.ModelViewSet):
     
 #////////////////////////////////////////////////////////////////////////////////////////////////
 class UsuariosLoginViews(APIView):
+    def get(self, request):
+        dados = User.objects.all()
+        serialized_data = UsuariosSerializers(dados, many= True).data
+        return Response(serialized_data, status= status.HTTP_200_OK)
     def post(self, request):
         data = request.data
         username = data.get('username')
