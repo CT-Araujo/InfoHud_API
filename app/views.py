@@ -49,7 +49,7 @@ class UsuariosLoginViews(APIView):
         
         if existe:
             if user:
-                url = 'http://127.0.0.1:8000/token/'
+                url = 'https://infohudapi.onrender.com/token/'
                 data_user = {
                     'username': username,
                     'password': password
