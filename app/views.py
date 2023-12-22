@@ -44,11 +44,8 @@ class UsuariosLoginViews(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
         
-        try:
-            user = authenticate(username = username, password = password)
-        
-        except User.DoesNotExist:
-            return Response(status= status.HTTP_404_NOT_FOUND)
+        user = authenticate(username = username, password = password)
+            
         if user:
             url = 'https://infohudapi.onrender.com/token/'
             data_user = {
