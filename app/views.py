@@ -1,3 +1,4 @@
+import requests
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -5,8 +6,9 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, status
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny, IsAuthenticated
-import requests
-
+import jwt
+from datetime import datetime, timedelta
+from django.conf import settings
 #///////////////////////////////////////////////////////////////////////////////////////////////
 
 class UsuariosViews(viewsets.ModelViewSet):
@@ -40,30 +42,45 @@ class UsuariosViews(viewsets.ModelViewSet):
     
 #////////////////////////////////////////////////////////////////////////////////////////////////
 class UsuariosLoginViews(APIView):
-   
-    def post(self, request):
-        data = request.data
-        username = data.get('username')
-        password = data.get('password')
-             
-        url = 'https://infohudapi.onrender.com/token/'
-        data_user = {
-            'username': username,
-            'password': password
-        }
+    def post(self,request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        user = authenticate(username=username, password=password)
+        existe = User.objects.filter(username = username).exists
+        
+        if existe:
+            if user:
+               url = 'https://infohudapi.onrender.com/token/'
+               data_user = {
+                    'username': username,
+                    'password': password
+                }
+               response = requests.post(url, data=data_user)
 
-        response = requests.post(url, data=data_user)
-
-        if response.status_code == 200:
-            token = response.json().get('access')
-            dados = {
-                'token': token,
-                'username': username
-            }
-            return Response(dados, status=status.HTTP_200_OK)
+               if response.status_code == 200:
+                    token = response.json().get('access')
+                    dados = {
+                        'token': token,
+                        'username': username
+                    }
+               return Response(dados, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response("Erro ao obter token.", status=status.HTTP_400_BAD_REQUEST)
-            
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
+def generate_jwt_token(user_id):
+    # Defina as informações que deseja incluir no token
+    payload = {
+        'user_id': user_id,
+        'exp': datetime.utcnow() + timedelta(days=1)  # Define a expiração do token (1 dia, por exemplo)
+    }
+
+    # Gere o token usando a chave secreta definida em suas configurações do Django
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+    return token
     
             
 #////////////////////////////////////////////////////////////////////////////////////////////////
