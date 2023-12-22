@@ -41,8 +41,9 @@ class UsuariosViews(viewsets.ModelViewSet):
 #////////////////////////////////////////////////////////////////////////////////////////////////
 class UsuariosLoginViews(APIView):
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        data = request.data
+        username = data.get('username')
+        password = data.get('password')
 
         if not (username and password):
             return Response("Informe username e password.", status=status.HTTP_400_BAD_REQUEST)
