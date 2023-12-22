@@ -45,7 +45,7 @@ class UsuariosLoginViews(APIView):
     def post(self,request):
         username = request.data.get("username")
         password = request.data.get("password")
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
         existe = User.objects.filter(username = username).exists
         
         if existe:
