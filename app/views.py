@@ -69,6 +69,8 @@ class UsuariosLoginViews(APIView):
                 return Response(dados, status= status.HTTP_200_OK)
             else:
                 return Response(status= status.HTTP_400_BAD_REQUEST)
+        else:
+            return(user, status.HTTP_404_NOT_FOUND)
         
     
             
