@@ -44,24 +44,12 @@ class UsuariosLoginViews(APIView):
         dados = User.objects.all()
         serialized_data = UsuariosSerializers(dados, many= True).data
         return Response(serialized_data, status= status.HTTP_200_OK)
+    
     def post(self, request):
         data = request.data
         username = data.get('username')
         password = data.get('password')
-
-        if not (username and password):
-            return Response("Informe username e password.", status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return Response("Usuário não encontrado.", status=status.HTTP_404_NOT_FOUND)
-
-        user = authenticate(username=username, password=password)
-        if user is None:
-            return Response("Credenciais inválidas.", status=status.HTTP_401_UNAUTHORIZED)
-
-     
+             
         url = 'https://infohudapi.onrender.com/token/'
         data_user = {
             'username': username,
