@@ -49,7 +49,7 @@ class UsuariosLoginViews(APIView):
         existe = User.objects.filter(username = username).exists
         
         if existe:
-            if user:
+            if user is not None:
                url = 'https://infohudapi.onrender.com/token/'
                data_user = {
                     'username': username,
@@ -69,19 +69,6 @@ class UsuariosLoginViews(APIView):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-
-
-def generate_jwt_token(user_id):
-    # Defina as informações que deseja incluir no token
-    payload = {
-        'user_id': user_id,
-        'exp': datetime.utcnow() + timedelta(days=1)  # Define a expiração do token (1 dia, por exemplo)
-    }
-
-    # Gere o token usando a chave secreta definida em suas configurações do Django
-    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-    return token
-    
             
 #////////////////////////////////////////////////////////////////////////////////////////////////
    
