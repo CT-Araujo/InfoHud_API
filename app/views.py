@@ -44,25 +44,40 @@ class UsuariosLoginViews(APIView):
         dados = User.objects.all()
         return Response(status= status.HTTP_200_OK)
     
-    def post(self,request):
+    def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-        
-        existe = User.objects.filter(username = username).exists()
-        user = authenticate(username = username, password = password)
-        
-        if existe:
-            if user:
 
-                dados = {
-                    'username': username
-                }
-                return Response(dados, status= status.HTTP_200_OK)
-        
-            else:
-                    return Response(user, status.HTTP_404_NOT_FOUND)
+        if not (username and password):
+            return Response("Informe username e password.", status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response("Usuário não encontrado.", status=status.HTTP_404_NOT_FOUND)
+
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return Response("Credenciais inválidas.", status=status.HTTP_401_UNAUTHORIZED)
+
+     
+        url = 'https://infohudapi.onrender.com/token/'
+        data_user = {
+            'username': username,
+            'password': password
+        }
+
+        response = requests.post(url, data=data_user)
+
+        if response.status_code == 200:
+            token = response.json().get('access')
+            dados = {
+                'token': token,
+                'username': username
+            }
+            return Response(dados, status=status.HTTP_200_OK)
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response("Erro ao obter token.", status=status.HTTP_400_BAD_REQUEST)
             
     
             
