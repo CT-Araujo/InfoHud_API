@@ -49,27 +49,26 @@ class UsuariosLoginViews(APIView):
         existe = User.objects.filter(username = username).exists
         
         if existe:
+            
             if user is not None:
-                url = 'https://infohudapi.onrender.com/token/'
-                data_user = {
+               url = 'https://infohudapi.onrender.com/token/'
+               data_user = {
                     'username': username,
                     'password': password
                 }
-                response = requests.post(url, data=data_user)
+               response = requests.post(url, data=data_user)
 
-                if response.status_code == 200:
+               if response.status_code == 200:
                     token = response.json().get('access')
                     dados = {
                         'token': token,
                         'username': username
                     }
-                
-                    return Response(dados, status=status.HTTP_200_OK)
-                else:
-                    return Response(status=status.HTTP_401_UNAUTHORIZED)
+               return Response(dados, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
             
 #////////////////////////////////////////////////////////////////////////////////////////////////
    
