@@ -50,7 +50,7 @@ class UsuariosLoginViews(APIView):
         
         if existe:
             if user is not None:
-               url = 'https://infohudapi.onrender.com/token/'
+                ''' url = 'https://infohudapi.onrender.com/token/'
                data_user = {
                     'username': username,
                     'password': password
@@ -62,8 +62,11 @@ class UsuariosLoginViews(APIView):
                     dados = {
                         'token': token,
                         'username': username
-                    }
-               return Response(dados, status=status.HTTP_200_OK)
+                    }'''
+                dados ={
+                    'username':username
+                }
+                return Response(dados, status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
