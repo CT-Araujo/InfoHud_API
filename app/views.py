@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from django.conf import settings
+from django.http import JsonResponse
 import requests
 from .serializers import *
 from rest_framework.response import Response
@@ -41,30 +44,44 @@ class UsuariosViews(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 #////////////////////////////////////////////////////////////////////////////////////////////////
-class UsuariosLoginViews(APIView):
+class UserLoginView(APIView):
+    
     def post(self,request):
-        username = request.data.get("username")
-        password = request.data.get("password")
-        user = authenticate(request, username=username, password=password)
-        existe = User.objects.filter(username = username).exists
+        username = request.data.get('username')
+        password = request.data.get('password')
         
+        existe = User.objects.filter(username = username).exists
+        dados = {
+            'username':username,
+            'password': password
+        }
         if existe:
-            url = 'https://infohudapi.onrender.com/token/'
-            data_user = {
-                'username': username,
-                'password': password
-            }
-            response = requests.post(url, data=data_user)
-
-            if response.status_code == 200:
-                token = response.json().get('access')
-                dados = {
-                    'token': token,
-                    'username': username
+            token = get_token(username, password)
+            if token != 401:
+                dados ={
+                    "token":token,
+                    "username":username
                 }
-                return Response(dados, status=status.HTTP_200_OK)
+                return Response(dados, status= status.HTTP_200_OK)
+            return Response(token)
         return Response(status=status.HTTP_404_NOT_FOUND)
-            
+
+
+def get_token(username, password):
+    url = 'https://infohudapi.onrender.com/token/'
+    user = {
+        "username": username,
+        "password": password
+    }
+    
+    requisicao = requests.post(url, data = user)
+    if requisicao.status_code == 200:
+        token = requisicao.json().get('access')
+        return token
+    status = requisicao.status_code
+    return status
+
+        
 #////////////////////////////////////////////////////////////////////////////////////////////////
    
 class PostagemViews(APIView):

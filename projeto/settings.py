@@ -93,9 +93,12 @@ CORS_ALLOW_METHODS = (
 APPEND_SLASH = False
 
 REST_FRAMEWORK = {
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
+  
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    )
+
 }
 
 AUTHENTICATION_BACKENDS = (

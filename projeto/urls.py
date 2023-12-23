@@ -14,5 +14,5 @@ urlpatterns = [
     path('',include(route.urls)),
     path('token/',TokenObtainPairView.as_view(),name='token'),
     path('postagem/',views.PostagemViews.as_view(),name='postagem'),
-    path('login/',views.UsuariosLoginViews.as_view(),name='login'),
+    path('login/',views.UserLoginView.as_view(),name='login'),
 ]
