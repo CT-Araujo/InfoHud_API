@@ -12,7 +12,7 @@ route.register(r'Usuarios',views.UsuariosViews,basename='Usuarios')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include(route.urls)),
-    path('token/',TokenObtainPairView.as_view(),name='token'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('postagem/',views.PostagemViews.as_view(),name='postagem'),
     path('login/',views.UserLoginView.as_view(),name='login'),
 ]

@@ -1,6 +1,4 @@
-from datetime import datetime, timedelta
-from django.conf import settings
-from django.http import JsonResponse
+from django.test import RequestFactory
 import requests
 from .serializers import *
 from rest_framework.response import Response
@@ -9,9 +7,7 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, status
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny, IsAuthenticated
-import jwt
-from datetime import datetime, timedelta
-from django.conf import settings
+from rest_framework_simplejwt.views import TokenObtainPairView
 #///////////////////////////////////////////////////////////////////////////////////////////////
 
 class UsuariosViews(viewsets.ModelViewSet):
@@ -56,7 +52,7 @@ class UserLoginView(APIView):
             'password': password
         }
         if existe:
-            token = get_token(username, password)
+            token = obter_token_jwt(username, password)
             if token != 401:
                 dados ={
                     "token":token,
@@ -66,22 +62,12 @@ class UserLoginView(APIView):
             return Response(token)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-
-def get_token(username, password):
-    url = 'https://infohudapi.onrender.com/token/'
-    user = {
-        "username": username,
-        "password": password
-    }
-    
-    requisicao = requests.post(url, data = user)
-    if requisicao.status_code == 200:
-        token = requisicao.json().get('access')
-        return token
-    status = requisicao.status_code
-    return status
-
-        
+def obter_token_jwt(username, password):
+    factory = RequestFactory()
+    request = factory.post('/token/', {'username': username, 'password': password})
+    view = TokenObtainPairView.as_view()
+    response = view(request)
+    return response.data.get('access')  
 #////////////////////////////////////////////////////////////////////////////////////////////////
    
 class PostagemViews(APIView):
