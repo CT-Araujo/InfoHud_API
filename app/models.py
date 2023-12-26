@@ -6,6 +6,8 @@ class Usuarios(models.Model):
     first_name = models.CharField(max_length=60, blank= False)
     email = models.EmailField(max_length=150,blank= False, unique= True)
     password = models.CharField(blank= False, max_length= 30)
+    last_name = models.CharField(max_length=200, blank= True, null = True)
+
     
     
     
