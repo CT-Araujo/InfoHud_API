@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from .models import*
 
 
+
 class UsuariosSerializers(serializers.ModelSerializer):
     class Meta:
         model = Usuarios
@@ -18,8 +19,10 @@ class UsuariosSerializers(serializers.ModelSerializer):
             password= validated_data['password'],
             first_name = validated_data['first_name']
         )
+       
         return user
-
+    
+    
 class PostagemSerializers(serializers.ModelSerializer):
     class Meta:
         model = Postagens
