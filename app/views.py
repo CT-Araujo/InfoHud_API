@@ -112,6 +112,14 @@ class PostagemViews(APIView):
         
         filtro_categoria = request.query_params.get('categoria',None)
         
+        if filtro_criador and filtro_categoria:
+            if criador:
+                dados = Postagens.objects.filter(user_nickname = filtro_criador,categoria = filtro_categoria)
+                serialized = PostagemSerializers(dados, many = True)
+                return Response(serialized.data, status= status.HTTP_200_OK)
+            else:
+                return Response(status = status.HTTP_404_NOT_FOUND)
+        
         if filtro_criador:
             if criador:
                 dados = Postagens.objects.filter(user_nickname = filtro_criador)
@@ -120,15 +128,14 @@ class PostagemViews(APIView):
             else:
                 return Response(status = status.HTTP_404_NOT_FOUND)
             
-        elif filtro_categoria:
+        if filtro_categoria:
             dados = Postagens.objects.filter(categoria = filtro_categoria)
             serialized = PostagemSerializers(dados, many = True)
             return Response(serialized.data,status = status.HTTP_200_OK)
-            
-        else:
-            dados = Postagens.objects.all()
-            serialized = PostagemSerializers(dados,many = True)
-            return Response(serialized.data,status = status.HTTP_200_OK)
+        
+        dados = Postagens.objects.all()
+        serialized = PostagemSerializers(dados,many = True)
+        return Response(serialized.data,status = status.HTTP_200_OK)
     
     def post(self,request):
         serializer = PostagemSerializers(data = request.data)
