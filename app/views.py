@@ -78,7 +78,7 @@ class UserLoginView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
         
-        existe = User.objects.filter(username = username).exists
+        existe = User.objects.filter(username = username).exists()
         dados = {
             'username':username,
             'password': password
@@ -91,7 +91,7 @@ class UserLoginView(APIView):
                     "username":username
                 }
                 return Response(dados, status = status.HTTP_200_OK)
-            return Response(token)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         return Response(status = status.HTTP_404_NOT_FOUND)
 
 def obter_token_jwt(username, password):
@@ -108,7 +108,7 @@ def obter_token_jwt(username, password):
 class PostagemViews(APIView):
     def get(self,request):
         filtro_criador = request.query_params.get('criador',None)
-        criador = User.objects.filter(username = filtro_criador).exists
+        criador = User.objects.filter(username = filtro_criador).exists()
         
         filtro_categoria = request.query_params.get('categoria',None)
         
