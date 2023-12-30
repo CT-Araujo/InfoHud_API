@@ -107,15 +107,24 @@ def obter_token_jwt(username, password):
    
 class PostagemViews(APIView):
     def get(self,request):
-        filtro = request.query_params.get('criador',None)
-        criador = User.objects.filter(username = filtro).exists
-        if filtro:
+        filtro_criador = request.query_params.get('criador',None)
+        criador = User.objects.filter(username = filtro_criador).exists
+        
+        filtro_categoria = request.query_params.get('categoria',None)
+        
+        if filtro_criador:
             if criador:
-                dados = Postagens.objects.filter(user_nickname = filtro)
+                dados = Postagens.objects.filter(user_nickname = filtro_criador)
                 serialized = PostagemSerializers(dados, many = True)
                 return Response(serialized.data,status = status.HTTP_200_OK)
             else:
                 return Response(status = status.HTTP_404_NOT_FOUND)
+            
+        elif filtro_categoria:
+            dados = Postagens.objects.filter(categoria = filtro_categoria)
+            serialized = PostagemSerializers(dados, many = True)
+            return Response(serialized.data,status = status.HTTP_200_OK)
+            
         else:
             dados = Postagens.objects.all()
             serialized = PostagemSerializers(dados,many = True)
