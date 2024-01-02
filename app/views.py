@@ -9,6 +9,7 @@ from rest_framework import viewsets, status
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.core.exceptions import ObjectDoesNotExist
 #///////////////////////////////////////////////////////////////////////////////////////////////
 
 class UsuariosViews(viewsets.ModelViewSet):
@@ -84,9 +85,10 @@ class UserLoginView(APIView):
             'password': password
         }
         if existe:
-            token = obter_token_jwt(username, password)
-            if token != 401:
-                dados ={
+            user = authenticate(username= username, password = password)
+            if user:
+                token = obter_token_jwt(username, password)
+                dados = {
                     "token":token,
                     "username":username
                 }
@@ -152,6 +154,15 @@ class PostagemViews(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request):
+        get_id = request.data.get('id')
+        try:
+            dado = Postagens.objects.get(id = get_id)
+            dado.delete()
+            return Response(status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
   
         
     def get_permissions(self):
@@ -159,6 +170,8 @@ class PostagemViews(APIView):
         if self.request.method == 'GET':
             return [AllowAny()]  
         elif self.request.method == 'POST':
+            return [IsAuthenticated()]
+        elif self.request.method == 'DELETE':  
             return [IsAuthenticated()] 
         return super().get_permissions()
     
