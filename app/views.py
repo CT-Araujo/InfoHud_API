@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+
 from django.test import RequestFactory
 import requests
 from .serializers import *
@@ -43,7 +43,7 @@ class UsuariosViews(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def create(self, request, *args, **kwargs):
+    def create(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
@@ -64,13 +64,30 @@ class UsuariosViews(viewsets.ModelViewSet):
     def patch(self, request, pk = None):
         if request.method == 'PATCH':
             filtro = request.query_params.get('username', None)
-            user = User.objects.get(username = filtro)
+            existe = User.objects.filter(username = filtro).exists()
             
-            serializer = UsuariosSerializers(user, data= request.data, partial = True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status= status.HTTP_200_OK)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            token = request.headers.get('Authorization')
+            
+            if existe:
+                user = User.objects.get(username = filtro)
+                if token:
+                    serializer = UsuariosSerializers(user, data= request.data, partial = True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        return Response(serializer.data, status= status.HTTP_200_OK)
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+    def get_permissions(self):
+ 
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        elif self.request.method == 'POST':
+            return [AllowAny()]  
+        elif self.request.method == 'PATCH':  
+            return [IsAuthenticated()] 
+        return super().get_permissions()
         
 #////////////////////////////////////////////////////////////////////////////////////////////////
 class UserLoginView(APIView):
